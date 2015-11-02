@@ -4,7 +4,7 @@ namespace Composable.Persistence
 {
     public interface IEntityFetcher
     {
-        TEntity Get<TEntity>(object entityId);        
-        IQueryable<T> Query<T>();
+        TEntity Get<TEntity>(object entityId);
+        bool TryGet<TEntity>(object key, out TEntity document);
     }
 }

@@ -274,6 +274,7 @@
     <Compile Include="KeyValueStorage\DocumentDbSession.cs" />
     <Compile Include="KeyValueStorage\NoSuchDocumentException.cs" />
     <Compile Include="NewtonSoft\JsonSettings.cs" />
+    <Compile Include="Persistence\IQueryablePersistenceSession.cs" />
     <Compile Include="ServiceBus\CanNotPublishMessageWhenReplayingEventsOnBusException.cs" />
     <Compile Include="ServiceBus\IHandleReplayedAndPublishedEvents.cs" />
     <Compile Include="ServiceBus\IHandleInProcessMessages.cs" />

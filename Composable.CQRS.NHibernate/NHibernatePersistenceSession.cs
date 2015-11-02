@@ -1,6 +1,7 @@
 #region usings
 
 using System.Linq;
+using Composable.KeyValueStorage;
 using NHibernate;
 using NHibernate.Linq;
 using Composable.Persistence;
@@ -9,7 +10,7 @@ using Composable.Persistence;
 
 namespace Composable.CQRS.NHibernate
 {
-    public class NHibernatePersistenceSession : IPersistenceSession
+    public class NHibernatePersistenceSession : IQueryablePersistenceSession
     {
         public NHibernatePersistenceSession(ISession session)
         {
@@ -25,7 +26,18 @@ namespace Composable.CQRS.NHibernate
 
         public T Get<T>(object id)
         {
-            return Session.Load<T>(id);
+            T value;
+            if (!TryGet(id, out value))
+            {
+                throw new NoSuchDocumentException(id, typeof(T));
+            }
+            return value;
+        }
+
+        public bool TryGet<TEntity>(object key, out TEntity document)
+        {
+            document = Session.Get<TEntity>(key);
+            return document != null;
         }
 
         public void Save(object instance)

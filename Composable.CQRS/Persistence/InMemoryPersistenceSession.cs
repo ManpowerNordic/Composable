@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Composable.DDD;
+using Composable.KeyValueStorage;
 
 namespace Composable.Persistence
 {
@@ -20,7 +21,12 @@ namespace Composable.Persistence
 
         public T Get<T>(object id)
         {
-            return _db.OfType<IPersistentEntity<Guid>>().Where(entity => entity.Id == (Guid)id).Cast<T>().Single();
+            T value;
+            if(!TryGet(id, out value))
+            {
+                throw new NoSuchDocumentException(id, typeof(T));
+            }
+            return value;
         }
 
         private static bool ValuesEqual(dynamic instance, dynamic id)
@@ -28,9 +34,10 @@ namespace Composable.Persistence
             return instance.Id == id;
         }
 
-        public T TryGet<T>(object id)
+        public bool TryGet<T>(object id, out T value)
         {
-            return _db.OfType<IPersistentEntity<Guid>>().Where(entity => entity.Id == (Guid)id).Cast<T>().SingleOrDefault();
+            value = _db.OfType<IPersistentEntity<Guid>>().Where(entity => entity.Id == (Guid)id).Cast<T>().SingleOrDefault();
+            return value != null;
         }
 
         public void Save(object instance)
