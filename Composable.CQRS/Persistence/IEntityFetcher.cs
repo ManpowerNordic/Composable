@@ -1,10 +1,11 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 
 namespace Composable.Persistence
 {
     public interface IEntityFetcher
     {
-        TEntity Get<TEntity>(object entityId);
-        bool TryGet<TEntity>(object key, out TEntity document);
+        TEntity Get<TEntity>(Guid entityId);
+        bool TryGet<TEntity>(Guid key, out TEntity document);
     }
 }

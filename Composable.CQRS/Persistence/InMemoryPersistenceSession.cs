@@ -8,7 +8,7 @@ namespace Composable.Persistence
 {
     public class InMemoryPersistenceSession : IQueryablePersistenceSession
     {
-        private HashSet<object> _db = new HashSet<object>();
+        private HashSet<IHasPersistentIdentity<Guid>> _db = new HashSet<IHasPersistentIdentity<Guid>>();
         public void Dispose()
         {
             _db = null;
@@ -19,7 +19,7 @@ namespace Composable.Persistence
             return _db.OfType<T>().AsQueryable();
         }
 
-        public T Get<T>(object id)
+        public T Get<T>(Guid id)
         {
             T value;
             if(!TryGet(id, out value))
@@ -29,25 +29,23 @@ namespace Composable.Persistence
             return value;
         }
 
-        private static bool ValuesEqual(dynamic instance, dynamic id)
+        public bool TryGet<T>(Guid id, out T value)
         {
-            return instance.Id == id;
-        }
-
-        public bool TryGet<T>(object id, out T value)
-        {
-            value = _db.OfType<IPersistentEntity<Guid>>().Where(entity => entity.Id == (Guid)id).Cast<T>().SingleOrDefault();
+            value = _db.Where(entity => entity.Id == id).Cast<T>().SingleOrDefault();
             return value != null;
+        }        
+
+        public TValue GetForUpdate<TValue>(Guid key) => Get<TValue>(key);
+        public bool TryGetForUpdate<TValue>(Guid key, out TValue value) => TryGet(key, out value);
+
+        public void Save<TEntity>(TEntity entity) where TEntity : IHasPersistentIdentity<Guid>
+        {
+            _db.Add(entity);
         }
 
-        public void Save(object instance)
+        public void Delete<TEntity>(TEntity entity) where TEntity : IHasPersistentIdentity<Guid>
         {
-            _db.Add(instance);
-        }
-
-        public void Delete(object instance)
-        {
-            _db.Remove(instance);
+            _db.Remove(entity);             
         }
     }
 }
