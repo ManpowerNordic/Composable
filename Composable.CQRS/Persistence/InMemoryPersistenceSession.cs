@@ -6,7 +6,7 @@ using Composable.KeyValueStorage;
 
 namespace Composable.Persistence
 {
-    public class InMemoryPersistenceSession : IPersistenceSession
+    public class InMemoryPersistenceSession : IQueryablePersistenceSession
     {
         private HashSet<object> _db = new HashSet<object>();
         public void Dispose()
